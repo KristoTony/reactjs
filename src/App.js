@@ -1,73 +1,86 @@
 import React, { Component } from 'react';
-import Component1 from './Components/Component1.js';
 import './App.css';
-
+import Person from './Person/Person';
 
 class App extends Component {
-
   state = {
-    Components:[
-      {Cno:4,Ano:23},
-      {Cno:5,Ano:25}
+    persons: [
+      { id: 'asfa1', name: 'Max', age: 28 },
+      { id: 'vasdf1', name: 'Manu', age: 29 },
+      { id: 'asdf11', name: 'Stephanie', age: 26 }
     ],
-    showcomponent1: false,
-    showcomponent2: false,
+    otherState: 'some other value',
+    showPersons: false
   }
 
-  SwitchComponentHandler = () =>{
-    //console.log("switching in finesse");
-    this.setState(
-      {
-        Components:[
-          {Cno:1,Ano:23},
-          {Cno:5,Ano:36}
-        ]
-      }
-    )
+  nameChangedHandler = ( event, id ) => {
+    const personIndex = this.state.persons.findIndex(p => {
+      return p.id === id;
+    });
+
+    const person = {
+      ...this.state.persons[personIndex]
+    };
+
+    // const person = Object.assign({}, this.state.persons[personIndex]);
+
+    person.name = event.target.value;
+
+    const persons = [...this.state.persons];
+    persons[personIndex] = person;
+
+    this.setState( {persons: persons} );
   }
 
-toggleComponentHandler1 = () => {
-  const first=this.state.showcomponent1;
-  this.setState({showcomponent1:!first})
-}
+  deletePersonHandler = (personIndex) => {
+    // const persons = this.state.persons.slice();
+    const persons = [...this.state.persons];
+    persons.splice(personIndex, 1);
+    this.setState({persons: persons});
+  }
 
-toggleComponentHandler2 = () => {
-  const second=this.state.showcomponent2;
-  this.setState({showcomponent2 : !second})
-}
-  render() {
+  togglePersonsHandler = () => {
+    const doesShow = this.state.showPersons;
+    this.setState( { showPersons: !doesShow } );
+  }
+
+  render () {
     const style = {
       backgroundColor: 'white',
       font: 'inherit',
       border: '1px solid blue',
       padding: '8px',
-      cursor: 'pointer',
-    }
+      cursor: 'pointer'
+    };
 
-    let Components = null;
-    if(this.state.showcomponent1){
-        Components = (
-          <div>
-            <Component1 Cno={this.state.Components[0].Cno} Ano= {this.state.Components[0].Ano}/>
-          </div>
-        )
-    };
-    if(this.state.showcomponent2){
-        Components=(
-          <div>
-            <Component1 Cno={this.state.Components[1].Cno} Ano= {this.state.Components[1].Ano}>I'm not the real one</Component1>
-          </div>
-        )
-    };
+    let persons = null;
+
+    if ( this.state.showPersons ) {
+      persons = (
+        <div>
+          {this.state.persons.map((person, index) => {
+            return <Person
+              click={() => this.deletePersonHandler(index)}
+              name={person.name} 
+              age={person.age}
+              key={person.id}
+              changed={(event) => this.nameChangedHandler(event, person.id)} />
+          })}
+        </div>
+      );
+    }
 
     return (
       <div className="App">
-        <p>Hello lets, get started!!!</p>
-        <button style={style} onClick={this.toggleComponentHandler1} >toggling Component 1 in finesse! ;)</button>
-        <button style={style} onClick={this.toggleComponentHandler2} >toggling Component 2 in finesse! ;)</button>
-        { Components }
+        <h1>Hi, I'm a React App</h1>
+        <p>This is really working!</p>
+        <button
+          style={style}
+          onClick={this.togglePersonsHandler}>Toggle Persons</button>
+        {persons}
       </div>
     );
+    // return React.createElement('div', {className: 'App'}, React.createElement('h1', null, 'Does this work now?'));
   }
 }
 
